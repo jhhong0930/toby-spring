@@ -1,14 +1,23 @@
 package spring.user.dao;
 
+import lombok.RequiredArgsConstructor;
 import spring.user.domain.User;
 
 import java.sql.*;
 
+@RequiredArgsConstructor
 public class UserDao {
+
+    /**
+     * 클래스를 분리함으로써 서로 관심사가 다르고 변화의 성격이 다른 구 코드를 완벽히 분리해냈다
+     * 하지만, UserDao가 SimpleConnectionMaker에 종속적이므로 코드의 수정없이 서브 클래스에 커넥션 생성 기능을 변경할 수 없다
+     * UserDao는 커넥션을 가져오는 구체적인 방법에 종속되어 버린다
+     */
+    private SimpleConnectionMaker simpleConnectionMaker;
 
     public void add(User user) throws ClassNotFoundException, SQLException {
 
-        Connection conn = getConnection();
+        Connection conn = simpleConnectionMaker.makeNewConnection();
 
         PreparedStatement ps = conn.prepareStatement("insert into users(id, name, password) values(?, ?, ?)");
         ps.setString(1, user.getId());
@@ -23,7 +32,7 @@ public class UserDao {
 
     public User get(String id) throws ClassNotFoundException, SQLException {
 
-        Connection conn = getConnection();
+        Connection conn = simpleConnectionMaker.makeNewConnection();
 
         PreparedStatement ps = conn.prepareStatement("select * from users where id = ?");
         ps.setString(1, id);
@@ -43,19 +52,4 @@ public class UserDao {
         return user;
     }
 
-
-    /**
-     * UserDao의 관심사항 1, DB 연결을 위한 커넥션
-     * 만약 각기 다른 방법으로 connection을 얻는 클래스를 구현하고 싶다면?
-     * 추상 메소드로 만들고 상속하여 구현하도록 설계
-     */
-    private Connection getConnection() throws ClassNotFoundException, SQLException {
-
-        Class.forName("com.mysql.cj.jdbc.Driver");
-
-        return DriverManager.getConnection(
-                "jdbc:mysql://localhost/toby",
-                "root",
-                "qwe123!@#");
-    }
 }

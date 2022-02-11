@@ -8,11 +8,7 @@ public class UserDao {
 
     public void add(User user) throws ClassNotFoundException, SQLException {
 
-        Class.forName("com.mysql.cj.jdbc.Driver");
-        Connection conn = DriverManager.getConnection(
-                "jdbc:mysql://localhost/toby",
-                "root",
-                "qwe123!@#");
+        Connection conn = getConnection();
 
         PreparedStatement ps = conn.prepareStatement("insert into users(id, name, password) values(?, ?, ?)");
         ps.setString(1, user.getId());
@@ -27,11 +23,7 @@ public class UserDao {
 
     public User get(String id) throws ClassNotFoundException, SQLException {
 
-        Class.forName("com.mysql.cj.jdbc.Driver");
-        Connection conn = DriverManager.getConnection(
-                "jdbc:mysql://localhost/toby",
-                "root",
-                "qwe123!@#");
+        Connection conn = getConnection();
 
         PreparedStatement ps = conn.prepareStatement("select * from users where id = ?");
         ps.setString(1, id);
@@ -49,5 +41,21 @@ public class UserDao {
         conn.close();
 
         return user;
+    }
+
+
+    /**
+     * UserDao의 관심사항 1, DB 연결을 위한 커넥션
+     * 만약 각기 다른 방법으로 connection을 얻는 클래스를 구현하고 싶다면?
+     * 추상 메소드로 만들고 상속하여 구현하도록 설계
+     */
+    private Connection getConnection() throws ClassNotFoundException, SQLException {
+
+        Class.forName("com.mysql.cj.jdbc.Driver");
+
+        return DriverManager.getConnection(
+                "jdbc:mysql://localhost/toby",
+                "root",
+                "qwe123!@#");
     }
 }

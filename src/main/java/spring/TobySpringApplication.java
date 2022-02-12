@@ -1,5 +1,7 @@
 package spring;
 
+import spring.user.dao.AConnectionMaker;
+import spring.user.dao.ConnectionMaker;
 import spring.user.dao.UserDao;
 import spring.user.domain.User;
 
@@ -9,7 +11,9 @@ public class TobySpringApplication {
 
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
 
-        UserDao dao = new UserDao();
+        ConnectionMaker connectionMaker = new AConnectionMaker();
+
+        UserDao dao = new UserDao(connectionMaker);
 
         User user = new User();
         user.setId("whiteship");

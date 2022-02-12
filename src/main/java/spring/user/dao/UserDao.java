@@ -1,17 +1,14 @@
 package spring.user.dao;
 
+import lombok.RequiredArgsConstructor;
 import spring.user.domain.User;
 
 import java.sql.*;
 
+@RequiredArgsConstructor
 public class UserDao {
 
-    private ConnectionMaker connectionMaker;
-
-    // 인터페이스로 분리하였지만 여전히 UserDao는 인터페이스와 구체적인 클래스를 알아야한다
-    public UserDao() {
-        connectionMaker = new AConnectionMaker();
-    }
+    private final ConnectionMaker connectionMaker;
 
     public void add(User user) throws ClassNotFoundException, SQLException {
 
